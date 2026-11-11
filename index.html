@@ -35,6 +35,12 @@ pre{white-space:pre-wrap;word-break:break-word;font-size:.82rem;background:var(-
 ol{padding-left:1.2em;margin:0;font-size:.9rem}
 ol li{margin-bottom:4px}
 .voice{border:2px solid var(--accent)}
+.dress{margin-bottom:12px}
+.dress .grp{font-size:.85rem;color:var(--sub);margin:8px 0 4px}
+.dress .checks{display:flex;flex-wrap:wrap;gap:8px}
+.dress label{display:flex;align-items:center;gap:6px;border:1px solid var(--line);background:var(--chip);border-radius:999px;padding:8px 14px;font-size:.95rem;cursor:pointer}
+.dress label:has(input:checked){background:var(--accent);color:var(--accent-text);border-color:var(--accent);font-weight:bold}
+.dress input{accent-color:var(--accent);margin:0}
 .voice .lead2{font-size:.88rem;color:var(--sub);margin:0 0 10px}
 .voice label{display:block;font-size:.9rem;margin-top:10px}
 </style>
@@ -58,6 +64,19 @@ ol li{margin-bottom:4px}
 
   <section>
     <h2>③ 内容を書く</h2>
+    <div class="dress" id="dress" hidden>
+      <div style="font-size:.92rem">衣装 <small style="color:var(--sub)">（2着以上は全部チェック）</small></div>
+      <div class="grp">洋装</div>
+      <div class="checks">
+        <label><input type="checkbox" name="dress" value="ウェディングドレス">ウェディングドレス</label>
+        <label><input type="checkbox" name="dress" value="カラードレス">カラードレス</label>
+      </div>
+      <div class="grp">和装</div>
+      <div class="checks">
+        <label><input type="checkbox" name="dress" value="白無垢">白無垢</label>
+        <label><input type="checkbox" name="dress" value="色打掛">色打掛</label>
+      </div>
+    </div>
     <textarea id="content" placeholder="例：3歳の女の子。赤い着物。最初は泣いていたけど、お母さんに抱っこされてから笑顔に。"></textarea>
     <p class="hint">箇条書き・話し言葉でOK。その日にあった小さな出来事を1つ入れると、文章が生き生きします。</p>
     <label class="row">撮影場所 <small style="color:var(--sub)">（任意）</small>
@@ -220,11 +239,12 @@ function buildPrompt() {
   const acc = st.account;
   const content = $("content").value.trim();
   const place = $("place").value.trim();
+  const dress = genre === WEDDING ? [...document.querySelectorAll('input[name=dress]:checked')].map(x => x.value) : [];
   return `あなたは${st.where}にある写真館「${st.name}」のInstagram担当スタッフです。
 次の撮影について、Instagramの投稿キャプションを3案書いてください。
 
 【ジャンル】${genre}
-【撮影の内容】${content}${place ? "\n【撮影場所】" + place : ""}
+【撮影の内容】${content}${dress.length ? "\n【衣装】" + dress.join("・") + (dress.length > 1 ? "（" + dress.length + "着）" : "") : ""}${place ? "\n【撮影場所】" + place : ""}
 
 【書き方のルール】
 ・1行目は、フィードで最初に見える一文。その日の情景や気持ちが浮かぶ言葉で始める。1行目に「${st.area}」を自然に入れる
@@ -232,7 +252,7 @@ function buildPrompt() {
 ・店名を書く時は「阿部写真舘」（舘は旧字）と書く
 ・絵文字は1案につき3〜5個まで。売り込みの言葉（「お得」「大人気」「今だけ」）は使わない
 ・お客さまやお子さまの名前など、個人が分かる情報は書かない
-・【撮影の内容】に書かれていない事実（料金・特典・キャンペーン・日付・人数など）は作らない
+・【撮影の内容】に書かれていない事実（料金・特典・キャンペーン・日付・人数など）は作らない${dress.length ? "\n・衣装は【衣装】にあるものだけを書く" + (dress.length > 1 ? "。着替えて雰囲気が変わる楽しさにも触れる" : "") : ""}
 ・URL（外部サイトへのリンク）は書かない
 
 【最後に必ず入れること】本文のあとに、次の2つを入れる
@@ -247,6 +267,7 @@ ${tagsFor(store, genre)}
 }
 
 function update() {
+  $("dress").hidden = genre !== WEDDING;
   $("content").placeholder = genre === WEDDING
     ? "例：色打掛でスタジオ撮影。最初は緊張していたおふたりが、愛犬が来てから自然な笑顔に。"
     : "例：3歳の女の子。赤い着物。最初は泣いていたけど、お母さんに抱っこされてから笑顔に。";
@@ -258,6 +279,7 @@ function update() {
 }
 $("content").addEventListener("input", update);
 $("place").addEventListener("input", update);
+document.querySelectorAll('input[name=dress]').forEach(x => x.addEventListener("change", update));
 
 async function copyText(t) {
   try { await navigator.clipboard.writeText(t); return true; }
