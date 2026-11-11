@@ -19,7 +19,7 @@ h2 small{color:var(--sub);font-weight:normal;font-size:.8rem;margin-left:6px}
 .chips{display:flex;flex-wrap:wrap;gap:8px}
 .chips button{border:1px solid var(--line);background:var(--chip);color:var(--text);border-radius:999px;padding:9px 14px;font-size:.95rem;cursor:pointer}
 .chips button[aria-pressed="true"]{background:var(--accent);color:var(--accent-text);border-color:var(--accent);font-weight:bold}
-textarea,input[type=text]{width:100%;border:1px solid var(--line);border-radius:10px;padding:10px;font-size:16px;background:var(--bg);color:var(--text);font-family:inherit}
+textarea,input[type=text],select{width:100%;border:1px solid var(--line);border-radius:10px;padding:10px;font-size:16px;background:var(--bg);color:var(--text);font-family:inherit}
 textarea{min-height:110px;resize:vertical}
 .hint{color:var(--sub);font-size:.82rem;margin:6px 0 0}
 label.row{display:block;margin-top:12px;font-size:.92rem}
@@ -34,6 +34,9 @@ summary{cursor:pointer;color:var(--sub);font-size:.88rem}
 pre{white-space:pre-wrap;word-break:break-word;font-size:.82rem;background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:10px;margin:8px 0 0}
 ol{padding-left:1.2em;margin:0;font-size:.9rem}
 ol li{margin-bottom:4px}
+.voice{border:2px solid var(--accent)}
+.voice .lead2{font-size:.88rem;color:var(--sub);margin:0 0 10px}
+.voice label{display:block;font-size:.9rem;margin-top:10px}
 </style>
 </head>
 <body>
@@ -91,6 +94,28 @@ ol li{margin-bottom:4px}
       <li>お客さまの写真は、掲載の許可をもらっているか確かめる</li>
       <li>料金・キャンペーンなどAIが書いた数字は消す（入れたい時は店の情報で書き直す）</li>
     </ol>
+  </section>
+  <section class="voice" id="voice">
+    <h2>💬 あなたの声がツールを進化させる</h2>
+    <p class="lead2">「ここが使いにくい」「この文がかたい」など、思ったことをひとことでどうぞ。名前は書かなくても送れます。</p>
+    <label>どんなこと？
+      <select id="vKind">
+        <option value="">選んでください（任意）</option>
+        <option>文章がイマイチ</option>
+        <option>ハッシュタグを変えたい</option>
+        <option>ジャンルを足したい</option>
+        <option>使いにくい</option>
+        <option>その他</option>
+      </select>
+    </label>
+    <label>内容（必須）
+      <textarea id="vText" style="min-height:80px" placeholder="例：七五三の文が少しかたいので、もっとやわらかくしたい"></textarea>
+    </label>
+    <label>名前（任意）
+      <input type="text" id="vName" placeholder="書かなくても送れます">
+    </label>
+    <div class="actions" style="margin-top:12px"><button class="btn main" id="vSend" disabled>送る</button></div>
+    <p class="msg" id="vMsg"></p>
   </section>
 </main>
 
@@ -252,6 +277,26 @@ $("open").onclick = async () => {
   await copyText(p); // 開いた先で指示文が入っていなくても、貼り付けで続けられるように
   $("msg").textContent = "ChatGPTを開きました。指示文が入っていなければ、貼り付けて送信してください。";
   window.open("https://chatgpt.com/?q=" + encodeURIComponent(p), "_blank");
+};
+// 改善リクエスト：Googleフォーム「インスタ文章メーカー 改善リクエスト」へ送る（回答は通知メールと回答シートへ）
+const FORM_URL = "https://docs.google.com/forms/d/e/1FAIpQLScNvl2CNNAuhrvjEI9w4J431v9DiyOqYV1t6DreHROTAt6utA/formResponse";
+const ENTRY = { store: "entry.1086140658", kind: "entry.1092170171", text: "entry.1307020062", name: "entry.936584715" };
+$("vText").addEventListener("input", () => { $("vSend").disabled = !$("vText").value.trim(); $("vMsg").textContent = ""; });
+$("vSend").onclick = async () => {
+  const body = new URLSearchParams();
+  body.append(ENTRY.store, store ? `${STORES[store].label}（${STORES[store].account}）` : "未選択");
+  body.append(ENTRY.kind, $("vKind").value);
+  body.append(ENTRY.text, $("vText").value.trim());
+  body.append(ENTRY.name, $("vName").value.trim());
+  $("vSend").disabled = true; $("vMsg").textContent = "送っています…";
+  try {
+    await fetch(FORM_URL, { method: "POST", mode: "no-cors", body });
+    $("vMsg").textContent = "届きました。ありがとうございます！";
+    $("vText").value = ""; $("vKind").value = "";
+  } catch (e) {
+    $("vMsg").textContent = "送れませんでした。電波のよいところでもう一度お試しください。";
+    $("vSend").disabled = false;
+  }
 };
 update();
 </script>
