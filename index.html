@@ -1,0 +1,259 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>インスタ文章メーカー</title>
+<style>
+:root{--bg:#faf8f5;--card:#fff;--text:#2b2622;--sub:#7a716a;--line:#e5ded6;--accent:#8a5a3c;--accent-text:#fff;--chip:#f1ebe4}
+@media (prefers-color-scheme:dark){:root{--bg:#1d1a18;--card:#28241f;--text:#f1ece6;--sub:#b3a99f;--line:#3d3731;--accent:#d29b72;--accent-text:#1d1a18;--chip:#332e28}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans","Noto Sans JP",sans-serif;line-height:1.6}
+main{max-width:560px;margin:0 auto;padding:20px 16px 48px}
+h1{font-size:1.3rem;margin:0 0 4px}
+.lead{color:var(--sub);font-size:.9rem;margin:0 0 20px}
+section{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px;margin-bottom:14px}
+h2{font-size:1rem;margin:0 0 10px}
+h2 small{color:var(--sub);font-weight:normal;font-size:.8rem;margin-left:6px}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chips button{border:1px solid var(--line);background:var(--chip);color:var(--text);border-radius:999px;padding:9px 14px;font-size:.95rem;cursor:pointer}
+.chips button[aria-pressed="true"]{background:var(--accent);color:var(--accent-text);border-color:var(--accent);font-weight:bold}
+textarea,input[type=text]{width:100%;border:1px solid var(--line);border-radius:10px;padding:10px;font-size:16px;background:var(--bg);color:var(--text);font-family:inherit}
+textarea{min-height:110px;resize:vertical}
+.hint{color:var(--sub);font-size:.82rem;margin:6px 0 0}
+label.row{display:block;margin-top:12px;font-size:.92rem}
+.actions{display:grid;gap:10px;margin-top:6px}
+.btn{display:block;width:100%;border:none;border-radius:12px;padding:15px;font-size:1.05rem;font-weight:bold;cursor:pointer;text-align:center}
+.btn.main{background:var(--accent);color:var(--accent-text)}
+.btn.sub{background:var(--chip);color:var(--text);border:1px solid var(--line)}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.msg{min-height:1.4em;font-size:.9rem;color:var(--accent);margin:4px 0 0;text-align:center}
+details{margin-top:4px}
+summary{cursor:pointer;color:var(--sub);font-size:.88rem}
+pre{white-space:pre-wrap;word-break:break-word;font-size:.82rem;background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:10px;margin:8px 0 0}
+ol{padding-left:1.2em;margin:0;font-size:.9rem}
+ol li{margin-bottom:4px}
+</style>
+</head>
+<body>
+<main>
+  <h1>インスタ文章メーカー</h1>
+  <p class="lead">阿部写真舘のインスタ投稿文をChatGPTで作ります。</p>
+
+  <section>
+    <h2>① 店舗を選ぶ</h2>
+    <div class="chips" id="stores"></div>
+    <p class="hint" id="account"></p>
+  </section>
+
+  <section>
+    <h2>② ジャンルを選ぶ</h2>
+    <p class="hint" id="genreAuto" hidden style="margin:0 0 4px">このアカウントは <b>フォトウェディング</b> で自動的に作ります。</p>
+    <div class="chips" id="genres"></div>
+  </section>
+
+  <section>
+    <h2>③ 内容を書く</h2>
+    <textarea id="content" placeholder="例：3歳の女の子。赤い着物。最初は泣いていたけど、お母さんに抱っこされてから笑顔に。"></textarea>
+    <p class="hint">箇条書き・話し言葉でOK。その日にあった小さな出来事を1つ入れると、文章が生き生きします。</p>
+    <label class="row">撮影場所 <small style="color:var(--sub)">（任意）</small>
+      <input type="text" id="place" placeholder="例：スタジオ／靱公園ロケ／旧藤田邸庭園">
+    </label>
+    <p class="hint">お客さまのお名前・お子さまの名前は書かないでください。</p>
+  </section>
+
+  <section>
+    <h2>④ 文章を作る</h2>
+    <div class="actions">
+      <button class="btn main" id="open" disabled>ChatGPTで作る</button>
+      <button class="btn sub" id="copy" disabled>指示文をコピー</button>
+    </div>
+    <p class="msg" id="msg"></p>
+    <details>
+      <summary>うまく開かない時は</summary>
+      <ol style="margin-top:8px">
+        <li>「指示文をコピー」を押す</li>
+        <li>ChatGPT（アプリでもブラウザでも）を開く</li>
+        <li>入力欄に貼り付けて送信する</li>
+      </ol>
+    </details>
+    <details>
+      <summary>ChatGPTに送る指示文を見る</summary>
+      <pre id="preview">店舗・ジャンルを選んで内容を書くと、ここに表示されます。</pre>
+    </details>
+  </section>
+
+  <section>
+    <h2>投稿する前に確認</h2>
+    <ol>
+      <li>3案から1つ選び、事実と違うところを直す</li>
+      <li>お客さまの写真は、掲載の許可をもらっているか確かめる</li>
+      <li>料金・キャンペーンなどAIが書いた数字は消す（入れたい時は店の情報で書き直す）</li>
+    </ol>
+  </section>
+</main>
+
+<script>
+// 店舗ごとの設定。タグは各アカウントの2026年の投稿で使われているもの＋AIの提案（記録memoを参照）。
+// {A} は地域名（大阪・徳島・茨城）に置き換わる。
+const STORES = {
+  "大阪": {
+    label: "大阪", name: "阿部写真舘 大阪本町靱公園前店", where: "大阪・本町", area: "大阪",
+    account: "@abephoto_wedding", genres: "wedding",
+    place: "例：スタジオ／靱公園ロケ／旧藤田邸庭園",
+    common: ["#阿部写真舘", "#阿部写真館", "#阿部写真館大阪店", "#大阪写真館", "#靱公園"],
+    wedding: ["#大阪前撮り", "#大阪フォトウエディング", "#大阪結婚写真", "#大阪ウェディングフォト"]
+  },
+  "徳島ウェディング": {
+    label: "徳島ウェディング", name: "阿部写真舘 徳島本店", where: "徳島・石井町", area: "徳島",
+    account: "@abephotowedding", genres: "wedding",
+    place: "例：スタジオ／ロケーション",
+    common: ["#阿部写真舘", "#阿部写真館", "#徳島阿部写真館", "#徳島写真館", "#徳島フォトスタジオ"],
+    wedding: ["#徳島前撮り", "#徳島花嫁", "#徳島フォトウエディング", "#徳島結婚写真"]
+  },
+  "徳島": {
+    label: "徳島（ウェディング以外）", name: "阿部写真舘 徳島本店", where: "徳島・石井町", area: "徳島",
+    account: "@abephoto_tokushima", genres: "general",
+    place: "例：スタジオ／大麻比古神社",
+    common: ["#阿部写真舘", "#阿部写真館", "#徳島阿部写真館", "#徳島写真館", "#徳島フォトスタジオ"],
+    shichigosan: ["#徳島七五三", "#七五三前撮り", "#七五三撮影"]
+  },
+  "茨城": {
+    label: "茨城", name: "阿部写真舘 プレイアトレ土浦店", where: "茨城・土浦", area: "茨城",
+    account: "@abephoto3", genres: "all",
+    place: "例：スタジオ",
+    common: ["#阿部写真舘", "#阿部写真館", "#茨城写真館", "#土浦写真館", "#プレイアトレ土浦"],
+    wedding: ["#茨城フォトウエディング", "#茨城前撮り", "#茨城結婚写真", "#茨城ウエディングフォト"],
+    shichigosan: ["#茨城七五三写真", "#七五三前撮り茨城", "#七五三"]
+  }
+};
+const WEDDING = "フォトウェディング";
+const GENRES = {
+  [WEDDING]: null, // 店舗ごとの wedding を使う
+  "七五三": null,  // 店舗ごとの shichigosan を使う（無い店舗は {A}七五三）
+  "成人式": ["#{A}成人式", "#成人式前撮り", "#振袖"],
+  "バースデー": ["#{A}バースデーフォト", "#バースデーフォト"],
+  "お宮参り": ["#{A}お宮参り", "#お宮参り"],
+  "マタニティ": ["#{A}マタニティフォト", "#マタニティフォト"],
+  "ニューボーン": ["#{A}ニューボーンフォト", "#ニューボーンフォト"],
+  "ハーフバースデー": ["#ハーフバースデー", "#{A}ハーフバースデー"],
+  "100日記念": ["#百日祝い", "#お食い初め", "#100日記念"],
+  "入園入学・卒園卒業": ["#入学記念", "#卒業記念", "#入学写真"],
+  "家族写真": ["#{A}家族写真", "#家族写真"],
+  "証明写真": ["#{A}証明写真", "#証明写真"]
+};
+
+let store = "", genre = "", wasAuto = false;
+const $ = id => document.getElementById(id);
+
+function makeChips(boxId, names, onPick, labelOf) {
+  const box = $(boxId);
+  names.forEach(name => {
+    const b = document.createElement("button");
+    b.type = "button"; b.textContent = labelOf ? labelOf(name) : name; b.dataset.name = name; b.setAttribute("aria-pressed", "false");
+    b.onclick = () => onPick(name);
+    box.appendChild(b);
+  });
+}
+function mark(boxId, name) {
+  $(boxId).querySelectorAll("button").forEach(x => x.setAttribute("aria-pressed", x.dataset.name === name ? "true" : "false"));
+}
+function pickStore(name) {
+  store = name; mark("stores", name);
+  const st = STORES[name];
+  $("place").placeholder = st.place;
+  // ウェディング専用アカウントはジャンルを自動でフォトウェディングに。徳島（一般）はウェディングを出さない
+  $("genres").querySelectorAll("button").forEach(b => {
+    const g = b.dataset.name;
+    b.hidden = st.genres === "wedding" ? true : (st.genres === "general" && g === WEDDING);
+  });
+  if (st.genres === "wedding") genre = WEDDING;
+  else if (genre === WEDDING && st.genres === "general") genre = "";
+  else if (st.genres !== "wedding" && genre === WEDDING && wasAuto) genre = "";
+  wasAuto = st.genres === "wedding";
+  mark("genres", genre);
+  $("genreAuto").hidden = st.genres !== "wedding";
+  try { localStorage.setItem("caption-store", name); } catch (e) {}
+  update();
+}
+makeChips("genres", Object.keys(GENRES), name => { genre = name; mark("genres", name); update(); });
+makeChips("stores", Object.keys(STORES), pickStore, k => STORES[k].label);
+try { const saved = localStorage.getItem("caption-store"); if (saved && STORES[saved]) pickStore(saved); } catch (e) {}
+
+function tagsFor(s, g) {
+  const st = STORES[s];
+  const area = st.area;
+  const own = g === WEDDING ? st.wedding
+    : g === "七五三" ? (st.shichigosan || ["#{A}七五三", "#七五三前撮り"]).map(t => t.replace("{A}", area))
+    : GENRES[g].map(t => t.replace("{A}", area));
+  return [...new Set(st.common.concat(own))].join(" ");
+}
+
+function buildPrompt() {
+  const st = STORES[store];
+  const acc = st.account;
+  const content = $("content").value.trim();
+  const place = $("place").value.trim();
+  return `あなたは${st.where}にある写真館「${st.name}」のInstagram担当スタッフです。
+次の撮影について、Instagramの投稿キャプションを3案書いてください。
+
+【ジャンル】${genre}
+【撮影の内容】${content}${place ? "\n【撮影場所】" + place : ""}
+
+【書き方のルール】
+・1行目は、フィードで最初に見える一文。その日の情景や気持ちが浮かぶ言葉で始める。1行目に「${st.area}」を自然に入れる
+・本文は4〜8行。お客さまの様子と、撮影中にあった小さな出来事を中心に書く。読む人が「自分もここで撮りたい」と思える、あたたかい文にする
+・店名を書く時は「阿部写真舘」（舘は旧字）と書く
+・絵文字は1案につき3〜5個まで。売り込みの言葉（「お得」「大人気」「今だけ」）は使わない
+・お客さまやお子さまの名前など、個人が分かる情報は書かない
+・【撮影の内容】に書かれていない事実（料金・特典・キャンペーン・日付・人数など）は作らない
+・URL（外部サイトへのリンク）は書かない
+
+【最後に必ず入れること】本文のあとに、次の2つを入れる
+1. プロフィールへの案内：「ご予約・お問い合わせは、プロフィール（${acc}）から」という内容を、その案の雰囲気に合わせて1〜2行で
+2. フォローのお願い：「撮影の様子を発信しています。よければフォローしてくださいね」という内容を1行で
+
+【ハッシュタグ】本文の下に1行空けて、次のタグをすべて入れ、さらに内容に合うタグを3〜5個足す（合計15個以内）
+${tagsFor(store, genre)}
+
+【出し方】
+案1・案2・案3と見出しをつけ、そのままInstagramに貼り付けられる形で出す。説明や前置きは書かない。`;
+}
+
+function update() {
+  $("content").placeholder = genre === WEDDING
+    ? "例：色打掛でスタジオ撮影。最初は緊張していたおふたりが、愛犬が来てから自然な笑顔に。"
+    : "例：3歳の女の子。赤い着物。最初は泣いていたけど、お母さんに抱っこされてから笑顔に。";
+  $("account").textContent = store ? `投稿するアカウント：${STORES[store].account}` : "";
+  const ok = store && genre && $("content").value.trim().length > 0;
+  $("open").disabled = !ok; $("copy").disabled = !ok;
+  $("preview").textContent = ok ? buildPrompt() : "店舗・ジャンルを選んで内容を書くと、ここに表示されます。";
+  $("msg").textContent = "";
+}
+$("content").addEventListener("input", update);
+$("place").addEventListener("input", update);
+
+async function copyText(t) {
+  try { await navigator.clipboard.writeText(t); return true; }
+  catch (e) {
+    const ta = document.createElement("textarea"); ta.value = t; document.body.appendChild(ta);
+    ta.select(); let ok = false; try { ok = document.execCommand("copy"); } catch (_) {}
+    ta.remove(); return ok;
+  }
+}
+
+$("copy").onclick = async () => {
+  $("msg").textContent = (await copyText(buildPrompt())) ? "コピーしました。ChatGPTに貼り付けてください。" : "コピーできませんでした。下の「指示文を見る」から長押しでコピーしてください。";
+};
+
+$("open").onclick = async () => {
+  const p = buildPrompt();
+  await copyText(p); // 開いた先で指示文が入っていなくても、貼り付けで続けられるように
+  $("msg").textContent = "ChatGPTを開きました。指示文が入っていなければ、貼り付けて送信してください。";
+  window.open("https://chatgpt.com/?q=" + encodeURIComponent(p), "_blank");
+};
+update();
+</script>
+</body>
+</html>
