@@ -36,6 +36,14 @@ ol{padding-left:1.2em;margin:0;font-size:.9rem}
 ol li{margin-bottom:4px}
 .voice{border:2px solid var(--accent)}
 .dress{margin-bottom:12px}
+.sp{margin-top:12px}
+.sp .head{font-size:.92rem}
+.sp .head small{color:var(--sub)}
+.sp label{display:flex;gap:8px;align-items:flex-start;border:1px solid var(--line);background:var(--chip);border-radius:10px;padding:8px 10px;margin-top:6px;font-size:.88rem;cursor:pointer}
+.sp label:has(input:checked){border-color:var(--accent);box-shadow:0 0 0 1px var(--accent)}
+.sp input{margin-top:3px;accent-color:var(--accent)}
+.sp .d{display:block;color:var(--sub);font-size:.8rem}
+.sp a{color:var(--accent);font-size:.8rem}
 .dress .grp{font-size:.85rem;color:var(--sub);margin:8px 0 4px}
 .dress .checks{display:flex;flex-wrap:wrap;gap:8px}
 .dress label{display:flex;align-items:center;gap:6px;border:1px solid var(--line);background:var(--chip);border-radius:999px;padding:8px 14px;font-size:.95rem;cursor:pointer}
@@ -82,7 +90,12 @@ ol li{margin-bottom:4px}
     <label class="row">撮影場所 <small style="color:var(--sub)">（任意）</small>
       <input type="text" id="place" placeholder="例：スタジオ／靱公園ロケ／旧藤田邸庭園">
     </label>
-    <label class="row">今の特典・キャンペーン <small style="color:var(--sub)">（任意・ある時だけ）</small>
+    <div class="sp" id="sp" hidden>
+      <div class="head">🎁 サイトに載っている特典 <small id="spDate"></small></div>
+      <div id="spList"></div>
+      <p class="hint">入れたいものにチェック。期限や中身は「サイトで見る」で確かめてください。</p>
+    </div>
+    <label class="row">特典・キャンペーンを書き足す <small style="color:var(--sub)">（任意）</small>
       <textarea id="offer" style="min-height:70px" placeholder="例：11/30までに相談会へ来店の方に10大特典（衣装ランクアップ無料・無料試着 など）"></textarea>
     </label>
     <p class="hint">書いた時だけ、特典の段落が入ります。今やっているものだけを書いてください。</p>
@@ -257,7 +270,7 @@ function buildPrompt() {
   const acc = st.account;
   const content = $("content").value.trim();
   const place = $("place").value.trim();
-  const offer = $("offer").value.trim();
+  const offer = offerText();
   const dress = genre === WEDDING ? [...document.querySelectorAll('input[name=dress]:checked')].map(x => x.value) : [];
   const isWedding = genre === WEDDING;
   const pointsTitle = isWedding ? "💐阿部写真舘が選ばれる理由💐" : "✨阿部写真舘のこだわりポイント";
@@ -291,7 +304,42 @@ ${tagsFor(store, genre)}
 案1・案2・案3と見出しをつけ、そのままInstagramに貼り付けられる形で出す。3案は書き出しと撮影の紹介の言葉を変える。説明や前置きは書かない。`;
 }
 
+// サイトから自動で集めた特典（specials.json。GitHub Actions がおよそ3週間に1回更新）
+let SPECIALS = null;
+fetch("specials.json", { cache: "no-cache" }).then(r => r.ok ? r.json() : null).then(d => { SPECIALS = d; update(); }).catch(() => {});
+function specialsFor(st, g) {
+  if (!SPECIALS) return [];
+  return SPECIALS.items.filter(i => i.store === st && (!i.genre || (i.genre.startsWith("!") ? g !== i.genre.slice(1) : g === i.genre)));
+}
+function renderSpecials() {
+  const list = store && genre ? specialsFor(store, genre) : [];
+  $("sp").hidden = !list.length;
+  const keep = new Set([...document.querySelectorAll("#spList input:checked")].map(x => x.value));
+  $("spDate").textContent = SPECIALS ? `（${SPECIALS.checked.slice(5, 10).replace("-", "/")} に自動確認）` : "";
+  $("spList").innerHTML = "";
+  list.forEach(i => {
+    const l = document.createElement("label");
+    const c = document.createElement("input"); c.type = "checkbox"; c.value = i.url + "|" + i.title; c.checked = keep.has(c.value);
+    c.addEventListener("change", update);
+    const t = document.createElement("span"); t.textContent = i.title;
+    const d = document.createElement("span"); d.className = "d"; d.textContent = i.imageOnly ? "中身は画像だけ。サイトで確認してください" : i.desc;
+    const a = document.createElement("a"); a.href = i.url; a.target = "_blank"; a.rel = "noopener"; a.textContent = "サイトで見る";
+    const box = document.createElement("span"); box.append(t, d, a);
+    c.dataset.img = i.imageOnly ? "1" : ""; c.dataset.desc = i.desc || "";
+    l.append(c, box); $("spList").appendChild(l);
+  });
+}
+function offerText() {
+  const picked = [...document.querySelectorAll("#spList input:checked")].map(c => {
+    const title = c.value.split("|").slice(1).join("|");
+    return "・" + title + (c.dataset.img ? "（中身は不明なので、特典があることだけを書き、内容は作らない）" : (c.dataset.desc ? "：" + c.dataset.desc : ""));
+  });
+  const own = $("offer").value.trim();
+  return picked.concat(own ? [own] : []).join("\n");
+}
+
 function update() {
+  renderSpecials();
   $("dress").hidden = genre !== WEDDING;
   $("content").placeholder = genre === WEDDING
     ? "例：色打掛でスタジオ撮影。最初は緊張していたおふたりが、愛犬が来てから自然な笑顔に。"
