@@ -1,0 +1,143 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>インスタ文章メーカー説明書</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@400;700;800&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#fff7ef;--card:#ffffff;--text:#3a2e28;--sub:#7d6c62;--pink:#ff7aa2;--yellow:#ffd25e;--mint:#5fd3b5;--blue:#6fa8ff;--purple:#b48cff;--line:#f1e3d6}
+@media (prefers-color-scheme:dark){:root{--bg:#211b19;--card:#2d2522;--text:#f7eee8;--sub:#c4b3a8;--line:#43372f}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font-family:"M PLUS Rounded 1c","Hiragino Maru Gothic ProN",sans-serif;line-height:1.75}
+main{max-width:620px;margin:0 auto;padding:0 16px 56px}
+.hero{text-align:center;padding:36px 8px 24px}
+.hero .emoji{font-size:3rem;display:block;animation:bounce 2.4s ease-in-out infinite}
+@keyframes bounce{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+@media (prefers-reduced-motion:reduce){.hero .emoji{animation:none}}
+h1{font-size:1.6rem;font-weight:800;margin:6px 0 4px;background:linear-gradient(90deg,var(--pink),var(--purple),var(--blue));-webkit-background-clip:text;background-clip:text;color:transparent}
+.hero p{color:var(--sub);margin:0;font-size:.95rem}
+.card{background:var(--card);border-radius:22px;padding:20px 18px;margin:16px 0;border:2px solid var(--line);box-shadow:0 6px 0 var(--line)}
+.card h2{font-size:1.15rem;font-weight:800;margin:0 0 10px;display:flex;align-items:center;gap:10px}
+.card h2 .tag{display:inline-flex;align-items:center;justify-content:center;width:38px;height:38px;border-radius:12px;font-size:1.25rem;flex:none}
+.c1 .tag{background:#ffe0ea}.c2 .tag{background:#fff1c7}.c3 .tag{background:#d6f5ec}.c4 .tag{background:#dde9ff}.c5 .tag{background:#eee2ff}.c6 .tag{background:#ffe0ea}.c7 .tag{background:#fff1c7}.c8 .tag{background:#d6f5ec}
+@media (prefers-color-scheme:dark){.card h2 .tag{background:#3b302b !important}}
+p{margin:.4em 0}
+.steps{list-style:none;padding:0;margin:0;counter-reset:s}
+.steps li{counter-increment:s;position:relative;padding:10px 0 10px 48px;border-bottom:2px dashed var(--line)}
+.steps li:last-child{border-bottom:none}
+.steps li::before{content:counter(s);position:absolute;left:0;top:10px;width:34px;height:34px;border-radius:50%;background:var(--pink);color:#fff;font-weight:800;display:flex;align-items:center;justify-content:center}
+.steps li:nth-child(2)::before{background:var(--yellow);color:#5a4300}
+.steps li:nth-child(3)::before{background:var(--mint)}
+.steps li:nth-child(4)::before{background:var(--blue)}
+.robot{display:flex;gap:12px;align-items:flex-start;background:var(--bg);border-radius:16px;padding:12px}
+.robot .face{font-size:2rem;flex:none}
+.pill{display:inline-block;background:var(--bg);border:2px solid var(--line);border-radius:999px;padding:2px 10px;margin:3px 2px;font-size:.85rem}
+.ok,.ng{border-radius:14px;padding:10px 12px;margin:8px 0}
+.ok{background:#e4f8f1}.ng{background:#ffe9ee}
+@media (prefers-color-scheme:dark){.ok{background:#21362f}.ng{background:#3a2328}}
+.qa dt{font-weight:800;margin-top:12px}
+.qa dt::before{content:"Q. ";color:var(--pink)}
+.qa dd{margin:2px 0 0 0;color:var(--sub)}
+.qa dd::before{content:"A. ";color:var(--mint);font-weight:800}
+.back{display:block;text-align:center;background:linear-gradient(90deg,var(--pink),var(--purple));color:#fff;text-decoration:none;font-weight:800;border-radius:999px;padding:14px;margin-top:24px;box-shadow:0 5px 0 #c96a9a}
+.small{font-size:.85rem;color:var(--sub)}
+</style>
+</head>
+<body>
+<main>
+  <div class="hero">
+    <span class="emoji">📸✨</span>
+    <h1>インスタ文章メーカーの説明書</h1>
+    <p>ボタンをぽちぽちするだけで、投稿文の下書きが3つできる道具です。</p>
+  </div>
+
+  <section class="card c1">
+    <h2><span class="tag">🪄</span>これって何？</h2>
+    <p>店舗・ジャンル・撮影の様子を入れると、<b>ChatGPT</b>（チャットジーピーティー＝文章を書いてくれるAI）がインスタの投稿文を<b>3案</b>書いてくれます。</p>
+    <p>ChatGPTは<b>無料版でOK</b>。ログインしていなくても使えます🙆</p>
+    <p>「選ばれる理由」の箇条書き、ハッシュタグ、プロフィールへの案内まで、いつもの型で入ります。</p>
+  </section>
+
+  <section class="card c2">
+    <h2><span class="tag">👣</span>使い方は4ステップ</h2>
+    <ol class="steps">
+      <li><b>店舗を選ぶ</b><br><span class="small">大阪／徳島ウェディング／徳島（ウェディング以外）／茨城。一度選ぶと、次からはスマホが覚えてくれます。</span></li>
+      <li><b>ジャンルを選ぶ</b><br><span class="small">大阪と徳島ウェディングは、フォトウェディングに自動で決まります。</span></li>
+      <li><b>内容を書く</b><br><span class="small">箇条書き・話し言葉でOK。「最初は泣いてたけど最後は笑顔」みたいな<b>小さな出来事</b>を1つ入れると、ぐっと良くなります。フォトウェディングは衣装にチェックを。</span></li>
+      <li><b>一番下の「ChatGPTで作る」を押す</b><br><span class="small">ChatGPTが開いて、すぐに書き始めます。ここを押すと別の画面に移るので、<b>最後に押してね</b>。</span></li>
+    </ol>
+  </section>
+
+  <section class="card c3">
+    <h2><span class="tag">🎁</span>特典はロボットが見に行ってます</h2>
+    <div class="robot">
+      <span class="face">🤖</span>
+      <div>
+        <p><b>約3週間に1回</b>、ロボットが各ホームページを見に行き、キャンペーンや特典のページの見出しを集めてきます。</p>
+        <p class="small">ロボットの正体は、GitHub Actions（ギットハブ・アクションズ）という、決まった日にプログラムを動かしてくれる無料の機能です。</p>
+      </div>
+    </div>
+    <p>見に行っているサイト：</p>
+    <p>
+      <span class="pill">大阪 savetheworld.jp</span>
+      <span class="pill">徳島 rulesphotogallery.com</span>
+      <span class="pill">徳島 753photo.com</span>
+      <span class="pill">徳島 20photo.jp</span>
+      <span class="pill">茨城 abba-wedding.com</span>
+      <span class="pill">茨城 ep-a-style.jp</span>
+    </p>
+    <p>集めた特典は、内容の欄の下に「🎁 サイトに載っている特典（〇/〇 に自動確認）」として並びます。<b>使いたいものにチェック</b>すれば、文章に特典の段落が入ります。</p>
+    <div class="ok">✅ 期限が過ぎた特典（「11/30まで」などが過ぎたもの）は、自動で外れます。</div>
+    <div class="ng">⚠️ <b>画像の中にしか書いていない特典</b>は、ロボットが中身を読めません。「中身は画像だけ」と出たら「サイトで見る」で確かめてね。</div>
+    <div class="ng">⚠️ サイトに新しい特典を載せても、ロボットが次に見に行くまで<b>最大3週間</b>ほどかかります。急ぎの時は「特典・キャンペーンを書き足す」欄に手で書いてください。</div>
+  </section>
+
+  <section class="card c4">
+    <h2><span class="tag">🏠</span>このページはどこにあるの？</h2>
+    <p><b>GitHub</b>（ギットハブ＝プログラムやファイルを置いておくサービス）の<b>GitHub Pages</b>という無料の仕組みで公開しています。</p>
+    <p>お金はかかりません。検索には出ないようにしてあるので、URLを知っている人だけが開けます🔑</p>
+    <p class="small">ブックマークやホーム画面に追加しておくと便利です。</p>
+  </section>
+
+  <section class="card c5">
+    <h2><span class="tag">💪</span>「選ばれる理由」はホームページで確かめたもの</h2>
+    <p>文章に入る強み（貸切・衣装の数・口コミ評価など）は、各店のホームページに書いてあることだけを使っています。AIが勝手に数字を作らないようにしてあります。</p>
+    <p class="small">口コミの点数が変わった、新しい強みができた…などに気づいたら、下の「あなたの声」から教えてください。</p>
+  </section>
+
+  <section class="card c6">
+    <h2><span class="tag">✅</span>投稿する前のおやくそく</h2>
+    <div class="ok">👀 3案から1つ選んで、事実と違うところがないか読み直す</div>
+    <div class="ok">📷 お客さまの写真は、掲載の許可をもらっているか確かめる</div>
+    <div class="ng">🙅 お客さま・お子さまのお名前は書かない（入力欄にも書かない）</div>
+    <div class="ng">🔢 料金や期限などの数字は、サイトと合っているか確かめる</div>
+  </section>
+
+  <section class="card c7">
+    <h2><span class="tag">💬</span>あなたの声がツールを進化させる</h2>
+    <p>「この文がかたい」「このタグも入れたい」「ここが使いにくい」…思ったことは、ページの下の欄からどうぞ。<b>名前なしでも送れます</b>。</p>
+    <p>送った声はメールで届いて、ツールの改善に使います。どんどん育てていきましょう🌱</p>
+  </section>
+
+  <section class="card c8">
+    <h2><span class="tag">❓</span>こまったときは</h2>
+    <dl class="qa">
+      <dt>ChatGPTが開いたのに、文章が入っていない</dt>
+      <dd>ボタンを押した時に指示文はコピー済みです。ChatGPTの入力欄に貼り付けて送信してください。</dd>
+      <dt>ChatGPTが開かない</dt>
+      <dd>「指示文をコピー」を押して、ChatGPTのアプリかサイトに貼り付けてください。</dd>
+      <dt>特典が出てこない</dt>
+      <dd>その店舗・ジャンルのキャンペーンページが今はない、ということです。あれば手で書き足してください。</dd>
+      <dt>文章がイマイチ…</dt>
+      <dd>内容の欄に、その日の出来事をもう少し具体的に書くと良くなります。それでもイマイチなら「あなたの声」へ！</dd>
+    </dl>
+  </section>
+
+  <a class="back" href="./">✍️ 文章メーカーにもどる</a>
+</main>
+</body>
+</html>

@@ -49,6 +49,7 @@ ol li{margin-bottom:4px}
 .dress label{display:flex;align-items:center;gap:6px;border:1px solid var(--line);background:var(--chip);border-radius:999px;padding:8px 14px;font-size:.95rem;cursor:pointer}
 .dress label:has(input:checked){background:var(--accent);color:var(--accent-text);border-color:var(--accent);font-weight:bold}
 .dress input{accent-color:var(--accent);margin:0}
+.about .lead2{font-size:.88rem;color:var(--sub);margin:0 0 10px}
 .voice .lead2{font-size:.88rem;color:var(--sub);margin:0 0 10px}
 .voice label{display:block;font-size:.9rem;margin-top:10px}
 </style>
@@ -98,30 +99,10 @@ ol li{margin-bottom:4px}
     <label class="row">特典・キャンペーンを書き足す <small style="color:var(--sub)">（任意）</small>
       <textarea id="offer" style="min-height:70px" placeholder="例：11/30までに相談会へ来店の方に10大特典（衣装ランクアップ無料・無料試着 など）"></textarea>
     </label>
-    <p class="hint">書いた時だけ、特典の段落が入ります。今やっているものだけを書いてください。</p>
+    <p class="hint">上でチェックした特典か、ここに書いた特典があれば、文章に「🎁特典」の段落が入ります。どちらもなければ特典の段落は入りません。書き足すのは、今やっているものだけにしてください。</p>
     <p class="hint">お客さまのお名前・お子さまの名前は書かないでください。</p>
   </section>
 
-  <section>
-    <h2>④ 文章を作る</h2>
-    <div class="actions">
-      <button class="btn main" id="open" disabled>ChatGPTで作る</button>
-      <button class="btn sub" id="copy" disabled>指示文をコピー</button>
-    </div>
-    <p class="msg" id="msg"></p>
-    <details>
-      <summary>うまく開かない時は</summary>
-      <ol style="margin-top:8px">
-        <li>「指示文をコピー」を押す</li>
-        <li>ChatGPT（アプリでもブラウザでも）を開く</li>
-        <li>入力欄に貼り付けて送信する</li>
-      </ol>
-    </details>
-    <details>
-      <summary>ChatGPTに送る指示文を見る</summary>
-      <pre id="preview">店舗・ジャンルを選んで内容を書くと、ここに表示されます。</pre>
-    </details>
-  </section>
 
   <section>
     <h2>投稿する前に確認</h2>
@@ -152,6 +133,32 @@ ol li{margin-bottom:4px}
     </label>
     <div class="actions" style="margin-top:12px"><button class="btn main" id="vSend" disabled>送る</button></div>
     <p class="msg" id="vMsg"></p>
+  </section>
+  <section class="about">
+    <h2>📖 このツールについて</h2>
+    <p class="lead2">特典はホームページから自動でチェックしています。しくみや使い方のコツは説明書にまとめました。</p>
+    <a class="btn sub" href="about.html" target="_blank" rel="noopener" style="text-decoration:none">説明書を見る</a>
+  </section>
+  <p class="hint" style="text-align:center;margin:18px 0 6px">⬇ 準備ができたら、最後にここを押してください</p>
+  <section>
+    <h2>④ 文章を作る</h2>
+    <div class="actions">
+      <button class="btn main" id="open" disabled>ChatGPTで作る</button>
+      <button class="btn sub" id="copy" disabled>指示文をコピー</button>
+    </div>
+    <p class="msg" id="msg"></p>
+    <details>
+      <summary>うまく開かない時は</summary>
+      <ol style="margin-top:8px">
+        <li>「指示文をコピー」を押す</li>
+        <li>ChatGPT（アプリでもブラウザでも）を開く</li>
+        <li>入力欄に貼り付けて送信する</li>
+      </ol>
+    </details>
+    <details>
+      <summary>ChatGPTに送る指示文を見る</summary>
+      <pre id="preview">店舗・ジャンルを選んで内容を書くと、ここに表示されます。</pre>
+    </details>
   </section>
 </main>
 
